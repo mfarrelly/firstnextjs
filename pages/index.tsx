@@ -16,11 +16,68 @@ function uniqueLetters(words: string[]): string[] {
     return uniqLetters;
 }
 
+interface OutOfPlaceWord {
+    data: OutOfPlaceChar[];
+}
+
+interface OutOfPlaceChar {
+    letter: string;
+    isOk: boolean;
+    isOutOfPosition: boolean;
+}
+
+/**
+ * Get a list of characters that are out of place and never OK.
+ */
+function analyze(words: string[], finalWord: string): OutOfPlaceWord[] {
+    const data: OutOfPlaceWord[] = [];
+    for (let word of words) {
+        const items: OutOfPlaceChar[] = [];
+        for (let i = 0; i < word.length; i++) {
+            if (i < finalWord.length) {
+                items.push({
+                    letter: word[i].toUpperCase(),
+                    isOk: word[i].toUpperCase() === finalWord[i].toUpperCase(),
+                    isOutOfPosition:
+                        word[i].toUpperCase() !== finalWord[i].toUpperCase() &&
+                        finalWord.includes(word[i]),
+                });
+            }
+        }
+        data.push({
+            data: items,
+        });
+    }
+    return data;
+}
+
+/**
+ * Get a list of characters in the correct place.
+ */
+function getOkLetters(words: string[], finalWord: string): string[] {
+    const computedWords = analyze(words, finalWord);
+
+    const validChars = R.flatten(
+        computedWords.map((word) => word.data.filter((d) => d.isOk))
+    );
+    return R.uniq(validChars.map((c) => c.letter));
+}
+
+function getOutOfPlaceLetters(words: string[], finalWord: string): string[] {
+    const okLetters = getOkLetters(words, finalWord);
+    const computedWords = analyze(words, finalWord);
+
+    const validChars = R.flatten(
+        computedWords.map((word) => word.data.filter((d) => d.isOutOfPosition))
+    );
+    return R.uniq(validChars.map((c) => c.letter));
+}
+
 const Home: NextPage = () => {
-    const [guessedWords, setGuessedWords] = React.useState<string[]>([
-        // "SASSY",
-        // "BOSSY",
-    ]);
+    const [isLoading, setLoading] = React.useState(false);
+    const [guessedWords, setGuessedWords] = React.useState<string[]>([]);
+    const [outOfPositionLetters, setOut] = React.useState<string[]>([]);
+    const [okLetters, setOk] = React.useState<string[]>([]);
     const [finalWord, setFinalWord] = React.useState<string>("STOLE");
 
     const [letters, setLetters] = React.useState<string[]>(
@@ -29,16 +86,26 @@ const Home: NextPage = () => {
 
     React.useEffect(() => {
         setLetters(uniqueLetters(guessedWords));
-    }, [guessedWords]);
+        setOk(getOkLetters(guessedWords, finalWord));
+        setOut(getOutOfPlaceLetters(guessedWords, finalWord));
+    }, [guessedWords, finalWord, setLetters, setOk, setOut]);
 
-    const [outOfPositionLetters, setOut] = React.useState<string[]>([]);
-    const [okLetters, setOk] = React.useState<string[]>([]);
     const onAccept = React.useCallback(
         (nextGuess: string) => {
             setGuessedWords((last) => [...last, nextGuess]);
         },
         [setGuessedWords]
     );
+
+    React.useEffect(() => {
+        setLoading(true);
+        fetch("api/today")
+            .then((res) => res.json())
+            .then((data) => {
+                setFinalWord(data.word);
+                setLoading(false);
+            });
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -52,29 +119,37 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>Wordle</h1>
+                <h1 className={styles.title}>Woorlde</h1>
                 <p className={styles.description}>How to play the game.</p>
-                <div className={styles.grid}>
-                    <div>Guesses</div>
-                    {guessedWords.map((word, wordindex) => {
-                        return (
-                            <WordGuess
-                                key={`gword_${wordindex}`}
-                                word={word}
-                                master={finalWord}
+                {isLoading && <p>Loading...</p>}
+                {!isLoading && (
+                    <>
+                        <div className={styles.grid}>
+                            <div>Guesses</div>
+                            {guessedWords.map((word, wordindex) => {
+                                return (
+                                    <WordGuess
+                                        key={`gword_${wordindex}`}
+                                        word={word}
+                                        finalWord={finalWord}
+                                    />
+                                );
+                            })}
+                            NextGuess
+                            <ActiveGuess
+                                finalWord={finalWord}
+                                onAccept={onAccept}
                             />
-                        );
-                    })}
-                    NextGuess
-                    <ActiveGuess master={finalWord} onAccept={onAccept} />
-                </div>
-                <div className={styles.keyboard}>
-                    <Keyboard
-                        letters={letters}
-                        okLetters={okLetters}
-                        outOfPositionLetters={outOfPositionLetters}
-                    ></Keyboard>
-                </div>
+                        </div>
+                        <div className={styles.keyboard}>
+                            <Keyboard
+                                letters={letters}
+                                okLetters={okLetters}
+                                outOfPositionLetters={outOfPositionLetters}
+                            ></Keyboard>
+                        </div>
+                    </>
+                )}
             </main>
 
             <footer className={styles.footer}>

@@ -54,15 +54,16 @@ export default function Keyboard({
                             k,
                             outOfPositionLetters
                         );
-                        const hasGuessed = R.includes(k, letters);
+                        const hasGuessed =
+                            R.includes(k, letters) && !isOk && !isOutOfPosition;
                         return (
                             <div
                                 key={`k${rowi}_${ki}`}
                                 className={cx(
                                     { [styles.key]: true },
+                                    { [styles.guessed]: hasGuessed },
                                     { [styles.okay]: isOk },
-                                    { [styles.outOfPosition]: isOutOfPosition },
-                                    { [styles.guessed]: hasGuessed }
+                                    { [styles.outOfPosition]: isOutOfPosition }
                                 )}
                             >
                                 {k}
