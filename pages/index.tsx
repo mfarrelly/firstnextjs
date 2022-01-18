@@ -7,6 +7,7 @@ import Keyboard from "../components/keyboard";
 import WordGuess from "../components/wordguess";
 
 import * as R from "ramda";
+import ActiveGuess from "../components/activeguess";
 
 function uniqueLetters(words: string[]): string[] {
     const allLetters = R.join("", words);
@@ -17,8 +18,8 @@ function uniqueLetters(words: string[]): string[] {
 
 const Home: NextPage = () => {
     const [guessedWords, setGuessedWords] = React.useState<string[]>([
-        "SASSY",
-        "BOSSY",
+        // "SASSY",
+        // "BOSSY",
     ]);
     const [finalWord, setFinalWord] = React.useState<string>("STOLE");
 
@@ -30,8 +31,14 @@ const Home: NextPage = () => {
         setLetters(uniqueLetters(guessedWords));
     }, [guessedWords]);
 
-    const [outOfPositionLetters, setOut] = React.useState<string[]>(["A"]);
-    const [okLetters, setOk] = React.useState<string[]>(["S"]);
+    const [outOfPositionLetters, setOut] = React.useState<string[]>([]);
+    const [okLetters, setOk] = React.useState<string[]>([]);
+    const onAccept = React.useCallback(
+        (nextGuess: string) => {
+            setGuessedWords((last) => [...last, nextGuess]);
+        },
+        [setGuessedWords]
+    );
 
     return (
         <div className={styles.container}>
@@ -59,6 +66,7 @@ const Home: NextPage = () => {
                         );
                     })}
                     NextGuess
+                    <ActiveGuess master={finalWord} onAccept={onAccept} />
                 </div>
                 <div className={styles.keyboard}>
                     <Keyboard
