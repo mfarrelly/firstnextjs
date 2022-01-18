@@ -1,0 +1,47 @@
+.letter {
+    border: 1px solid #ccc;
+    padding: 15px;
+    font-size: 32px;
+    display: inline-block;
+}
+
+.word {
+    display: block;
+    width: 500px;
+}
+
+.keyRow {
+    display: block;
+    text-align: center;
+}
+
+.key {
+    border: 1px solid #ccc;
+    color: black;
+    display: inline-block;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 15%;
+}
+
+.bad {
+    border: 1px solid red;
+    color: red;
+}
+.guessed {
+    border: 1px solid #333;
+    color: #666;
+    background-color: #333;
+}
+
+.okay {
+    border: 1px solid greenyellow;
+    color: greenyellow;
+    background-color: #00aa00;
+}
+
+.outOfPosition {
+    border: 1px solid yellow;
+    color: yellow;
+    background-color: #663366;
+}
