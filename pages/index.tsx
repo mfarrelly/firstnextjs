@@ -3,11 +3,10 @@ import Head from "next/head";
 import Image from "next/image";
 import React from "react";
 import styles from "../styles/Home.module.css";
-import Keyboard from "./keyboard";
+import Keyboard from "../components/keyboard";
+import WordGuess from "../components/wordguess";
 
 import * as R from "ramda";
-
-import WordGuess from "./wordguess";
 
 function uniqueLetters(words: string[]): string[] {
     const allLetters = R.join("", words);
