@@ -47,7 +47,7 @@ export default function Keyboard({
     const styledKeys = React.useMemo(() => {
         return keys.map((keyRow, rowi) => {
             return (
-                <div className={styles.keyRow}>
+                <div key={`keyrow_${rowi}`} className={styles.keyRow}>
                     {keyRow.map((k, ki) => {
                         const isOk = R.includes(k, okLetters);
                         const isOutOfPosition = R.includes(
@@ -72,7 +72,7 @@ export default function Keyboard({
                 </div>
             );
         });
-    }, []);
+    }, [keys, outOfPositionLetters, okLetters, letters]);
 
     return <div>{styledKeys}</div>;
 }
