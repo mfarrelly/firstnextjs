@@ -2,74 +2,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
+import { Wordle } from "../components/wordle";
 import styles from "../styles/Home.module.css";
-import VisualKeyboard from "../components/visualKeyboard";
-import WordGuess from "../components/wordguess";
-
-import ActiveGuess from "../components/activeguess";
-import {
-    uniqueLetters,
-    getOkLetters,
-    getOutOfPlaceLetters,
-} from "../components/util";
-import { KeyContextProps } from "../components/keyContext";
 
 const Home: NextPage = () => {
-    const [isLoading, setLoading] = React.useState(false);
-    const [guessedWords, setGuessedWords] = React.useState<string[]>([]);
-    const [outOfPositionLetters, setOut] = React.useState<string[]>([]);
-    const [okLetters, setOk] = React.useState<string[]>([]);
-    const [finalWord, setFinalWord] = React.useState<string>("STOLE");
-
-    const [letters, setLetters] = React.useState<string[]>(
-        uniqueLetters(guessedWords)
-    );
-
-    React.useEffect(() => {
-        setLetters(uniqueLetters(guessedWords));
-        setOk(getOkLetters(guessedWords, finalWord));
-        setOut(getOutOfPlaceLetters(guessedWords, finalWord));
-    }, [guessedWords, finalWord, setLetters, setOk, setOut]);
-
-    const onAccept = React.useCallback(
-        (nextGuess: string) => {
-            setGuessedWords((last) => [...last, nextGuess]);
-        },
-        [setGuessedWords]
-    );
-
-    React.useEffect(() => {
-        setLoading(true);
-        setGuessedWords([]);
-        setOut([]);
-        setOk([]);
-        setFinalWord("1");
-        setLetters([]);
-
-        fetch("api/today")
-            .then((res) => res.json())
-            .then((data) => {
-                setFinalWord(data.word.toUpperCase());
-                setLoading(false);
-            });
-    }, []);
-
-    // const [nextKey, setNextKey] = React.useState<string>();
-    // const onKeyPress = React.useCallback(
-    //     (key: string) => {
-    //         setNextKey(key);
-    //     },
-    //     [setNextKey]
-    // );
-
-    // const contextValue = React.useMemo<KeyContextProps>(
-    //     () => ({
-    //         onKeyPress: onKeyPress,
-    //         keys: nextKey,
-    //     }),
-    //     [onKeyPress, nextKey]
-    // );
-
     return (
         <div className={styles.container}>
             <Head>
@@ -82,36 +18,7 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                <h1 className={styles.title}>Woorlde</h1>
-                <p className={styles.description}>How to play the game.</p>
-                {isLoading && <p>Loading...</p>}
-                {!isLoading && (
-                    <>
-                        <div className={styles.grid}>
-                            <div>Guesses</div>
-                            {guessedWords.map((word, wordindex) => (
-                                <WordGuess
-                                    key={`gword_${wordindex}`}
-                                    word={word}
-                                    finalWord={finalWord}
-                                />
-                            ))}
-                        </div>
-
-                        <div className={styles.keyboard}>
-                            <ActiveGuess
-                                finalWord={finalWord}
-                                onAccept={onAccept}
-                            >
-                                <VisualKeyboard
-                                    letters={letters}
-                                    okLetters={okLetters}
-                                    outOfPositionLetters={outOfPositionLetters}
-                                ></VisualKeyboard>
-                            </ActiveGuess>
-                        </div>
-                    </>
-                )}
+                <Wordle />
             </main>
 
             <footer className={styles.footer}>
