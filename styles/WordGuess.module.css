@@ -12,16 +12,25 @@
 }
 
 .keyRow {
-    display: block;
+    display: flex;
     text-align: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
 .key {
     border: 1px solid #ccc;
+    flex-basis: auto;
+    flex-grow: 1;
     color: #eee;
     display: inline-block;
-    margin: 10px;
-    padding: 15px;
+    margin: 0.25em;
+    padding: 0.25em;
+    padding-top: 0.75em;
+    padding-bottom: 0.75em;
     border-radius: 15%;
 }
 

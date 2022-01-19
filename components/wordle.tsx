@@ -70,9 +70,6 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
                                 finalWord={finalWord}
                             />
                         ))}
-                    </div>
-
-                    <div className={styles.keyboard}>
                         <ActiveGuess finalWord={finalWord} onAccept={onAccept}>
                             <VisualKeyboard
                                 letters={letters}
