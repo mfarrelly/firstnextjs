@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import React from "react";
 import styles from "../styles/Home.module.css";
-import Keyboard from "../components/keyboard";
+import VisualKeyboard from "../components/visualKeyboard";
 import WordGuess from "../components/wordguess";
 
 import ActiveGuess from "../components/activeguess";
@@ -103,11 +103,11 @@ const Home: NextPage = () => {
                                 finalWord={finalWord}
                                 onAccept={onAccept}
                             >
-                                <Keyboard
+                                <VisualKeyboard
                                     letters={letters}
                                     okLetters={okLetters}
                                     outOfPositionLetters={outOfPositionLetters}
-                                ></Keyboard>
+                                ></VisualKeyboard>
                             </ActiveGuess>
                         </div>
                     </>

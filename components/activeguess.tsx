@@ -105,8 +105,6 @@ export default function ActiveGuess({
         <>
             <div className={styles.word}>
                 {shownLetters.map((letterItem, index) => {
-                    // const isOk = letterItem.isOk;
-                    // const isOutOfPosition = letterItem.isOutOfPosition;
                     return (
                         <div
                             key={index}

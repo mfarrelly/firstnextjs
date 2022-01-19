@@ -4,39 +4,17 @@ import React from "react";
 import cx from "classnames";
 import { KeyContext } from "./keyContext";
 
-export interface KeyboardProps {
+export interface VisualKeyboardProps {
     letters: string[];
     okLetters: string[];
     outOfPositionLetters: string[];
 }
 
-export default function Keyboard({
+export default function VisualKeyboard({
     letters,
     okLetters,
     outOfPositionLetters,
-}: KeyboardProps) {
-    // let items: any[] = [];
-    // for (let i = 0; i < word.length; i++) {
-    //     items.push({
-    //         letter: word[i].toUpperCase(),
-    //         style:
-    //             word[i].toUpperCase() == master[i].toUpperCase()
-    //                 ? styles.okay
-    //                 : styles.bad,
-    //     });
-    // }
-    // return (
-    //     <div className={styles.word}>
-    //         {items.map((letterItem, index) => {
-    //             return (
-    //                 <div key={index} className={styles.letter}>
-    //                     {letterItem.letter}
-    //                 </div>
-    //             );
-    //         })}
-    //     </div>
-    // );
-
+}: VisualKeyboardProps) {
     const { onKeyPress } = React.useContext(KeyContext);
 
     const keys = React.useMemo(() => {
@@ -69,6 +47,7 @@ export default function Keyboard({
                                     { [styles.outOfPosition]: isOutOfPosition }
                                 )}
                                 onClick={() =>
+                                    // mock a keyboard event.
                                     onKeyPress({ key: k } as KeyboardEvent)
                                 }
                             >

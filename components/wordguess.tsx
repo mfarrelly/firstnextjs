@@ -14,8 +14,8 @@ export default function WordGuess({ word, finalWord = "" }: WordGuessProps) {
         if (!finalWord) {
             return [];
         }
-        const a = analyze([word], finalWord);
-        return a[0].data;
+        const result = analyze([word], finalWord);
+        return result[0].data;
     }, [word, finalWord]);
 
     return (
