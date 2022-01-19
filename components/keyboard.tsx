@@ -2,6 +2,7 @@ import styles from "../styles/WordGuess.module.css";
 import * as R from "ramda";
 import React from "react";
 import cx from "classnames";
+import { KeyContext } from "./keyContext";
 
 export interface KeyboardProps {
     letters: string[];
@@ -36,6 +37,8 @@ export default function Keyboard({
     //     </div>
     // );
 
+    const { onKeyPress } = React.useContext(KeyContext);
+
     const keys = React.useMemo(() => {
         return [
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -65,6 +68,9 @@ export default function Keyboard({
                                     { [styles.okay]: isOk },
                                     { [styles.outOfPosition]: isOutOfPosition }
                                 )}
+                                onClick={() =>
+                                    onKeyPress({ key: k } as KeyboardEvent)
+                                }
                             >
                                 {k}
                             </div>
@@ -73,7 +79,7 @@ export default function Keyboard({
                 </div>
             );
         });
-    }, [keys, outOfPositionLetters, okLetters, letters]);
+    }, [keys, outOfPositionLetters, okLetters, letters, onKeyPress]);
 
     return <div>{styledKeys}</div>;
 }

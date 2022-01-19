@@ -3,15 +3,35 @@ import * as R from "ramda";
 import cx from "classnames";
 import React from "react";
 import { validButNotChosen, validWords } from "./validWords";
+import { KeyContext, KeyContextProps } from "./keyContext";
 
 export interface WordGuessProps {
+    children?: React.ReactElement;
     finalWord: string;
     onAccept: (word: string) => void;
+    nextKey?: string;
 }
 
-export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
+export default function ActiveGuess({
+    children,
+    finalWord,
+    onAccept,
+    nextKey,
+}: WordGuessProps) {
     const [letters, setLetters] = React.useState<string[]>([]);
     const maxLetters = React.useMemo(() => finalWord?.length ?? 5, [finalWord]);
+
+    React.useEffect(() => {
+        if (nextKey) {
+            const key = nextKey.toUpperCase();
+            if (
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(key) &&
+                letters.length < maxLetters
+            ) {
+                setLetters((last) => [...last, key]);
+            }
+        }
+    }, [nextKey, letters.length, maxLetters, setLetters]);
 
     const onKeyPress = React.useCallback(
         (ev: KeyboardEvent) => {
@@ -50,6 +70,7 @@ export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
         },
         [setLetters, letters, onAccept, maxLetters]
     );
+
     React.useEffect(() => {
         document.addEventListener("keyup", onKeyPress);
         return () => {
@@ -73,22 +94,34 @@ export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
         }
     }, [letters, finalWord, maxLetters]);
 
+    const contextValue = React.useMemo<KeyContextProps>(
+        () => ({
+            onKeyPress: onKeyPress,
+        }),
+        [onKeyPress]
+    );
+
     return (
-        <div className={styles.word}>
-            {shownLetters.map((letterItem, index) => {
-                // const isOk = letterItem.isOk;
-                // const isOutOfPosition = letterItem.isOutOfPosition;
-                return (
-                    <div
-                        key={index}
-                        className={cx({
-                            [styles.letter]: true,
-                        })}
-                    >
-                        {letterItem}
-                    </div>
-                );
-            })}
-        </div>
+        <>
+            <div className={styles.word}>
+                {shownLetters.map((letterItem, index) => {
+                    // const isOk = letterItem.isOk;
+                    // const isOutOfPosition = letterItem.isOutOfPosition;
+                    return (
+                        <div
+                            key={index}
+                            className={cx({
+                                [styles.letter]: true,
+                            })}
+                        >
+                            {letterItem}
+                        </div>
+                    );
+                })}
+            </div>
+            <KeyContext.Provider value={contextValue}>
+                {children}
+            </KeyContext.Provider>
+        </>
     );
 }

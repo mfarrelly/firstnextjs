@@ -12,6 +12,7 @@ import {
     getOkLetters,
     getOutOfPlaceLetters,
 } from "../components/util";
+import { KeyContextProps } from "../components/keyContext";
 
 const Home: NextPage = () => {
     const [isLoading, setLoading] = React.useState(false);
@@ -53,6 +54,22 @@ const Home: NextPage = () => {
             });
     }, []);
 
+    // const [nextKey, setNextKey] = React.useState<string>();
+    // const onKeyPress = React.useCallback(
+    //     (key: string) => {
+    //         setNextKey(key);
+    //     },
+    //     [setNextKey]
+    // );
+
+    // const contextValue = React.useMemo<KeyContextProps>(
+    //     () => ({
+    //         onKeyPress: onKeyPress,
+    //         keys: nextKey,
+    //     }),
+    //     [onKeyPress, nextKey]
+    // );
+
     return (
         <div className={styles.container}>
             <Head>
@@ -79,17 +96,19 @@ const Home: NextPage = () => {
                                     finalWord={finalWord}
                                 />
                             ))}
+                        </div>
+
+                        <div className={styles.keyboard}>
                             <ActiveGuess
                                 finalWord={finalWord}
                                 onAccept={onAccept}
-                            />
-                        </div>
-                        <div className={styles.keyboard}>
-                            <Keyboard
-                                letters={letters}
-                                okLetters={okLetters}
-                                outOfPositionLetters={outOfPositionLetters}
-                            ></Keyboard>
+                            >
+                                <Keyboard
+                                    letters={letters}
+                                    okLetters={okLetters}
+                                    outOfPositionLetters={outOfPositionLetters}
+                                ></Keyboard>
+                            </ActiveGuess>
                         </div>
                     </>
                 )}
