@@ -2,6 +2,7 @@ import styles from "../styles/WordGuess.module.css";
 import * as R from "ramda";
 import cx from "classnames";
 import React from "react";
+import { analyze } from "./util";
 
 export interface WordGuessProps {
     word: string;
@@ -9,23 +10,12 @@ export interface WordGuessProps {
 }
 
 export default function WordGuess({ word, finalWord = "" }: WordGuessProps) {
-    let items: any[] = React.useMemo(() => {
+    let items = React.useMemo(() => {
         if (!finalWord) {
             return [];
         }
-        const a = [];
-        for (let i = 0; i < word.length; i++) {
-            if (i < finalWord.length) {
-                a.push({
-                    letter: word[i].toUpperCase(),
-                    isOk: word[i].toUpperCase() === finalWord[i].toUpperCase(),
-                    isOutOfPosition:
-                        word[i].toUpperCase() !== finalWord[i].toUpperCase() &&
-                        finalWord.includes(word[i]),
-                });
-            }
-        }
-        return a;
+        const a = analyze([word], finalWord);
+        return a[0].data;
     }, [word, finalWord]);
 
     return (

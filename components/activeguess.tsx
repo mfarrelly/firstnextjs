@@ -2,6 +2,7 @@ import styles from "../styles/WordGuess.module.css";
 import * as R from "ramda";
 import cx from "classnames";
 import React from "react";
+import { validButNotChosen, validWords } from "./validWords";
 
 export interface WordGuessProps {
     finalWord: string;
@@ -14,11 +15,29 @@ export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
 
     const onKeyPress = React.useCallback(
         (ev: KeyboardEvent) => {
+            if (ev.ctrlKey || ev.altKey) {
+                return;
+            }
             if (ev.key == "Enter" && letters.length == maxLetters) {
                 // check that the word is valid first.
-                console.log(`activeguess`, letters, finalWord);
-                onAccept(R.join("", letters));
-                setLetters([]);
+                const currentWord = R.join("", letters);
+
+                const isValid = R.includes(currentWord.toLowerCase(), [
+                    ...validWords,
+                    ...validButNotChosen,
+                ]);
+
+                if (isValid) {
+                    onAccept(currentWord);
+                    setLetters([]);
+                }
+            } else if (ev.key == "Backspace") {
+                setLetters((last) => {
+                    if (last.length > 0) {
+                        return last.slice(0, last.length - 1);
+                    }
+                    return last;
+                });
             } else {
                 const key = ev.key.toUpperCase();
                 if (
@@ -29,7 +48,7 @@ export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
                 }
             }
         },
-        [setLetters, letters, onAccept, maxLetters, finalWord]
+        [setLetters, letters, onAccept, maxLetters]
     );
     React.useEffect(() => {
         document.addEventListener("keyup", onKeyPress);
@@ -46,7 +65,7 @@ export default function ActiveGuess({ finalWord, onAccept }: WordGuessProps) {
             const pads = maxLetters - letters.length;
             let extraChars: string[] = [];
             for (let i = 0; i < pads; i++) {
-                extraChars = [...extraChars, ""];
+                extraChars = [...extraChars, "_"];
             }
             return [...letters, ...extraChars];
         } else {

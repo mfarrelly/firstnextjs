@@ -6,72 +6,12 @@ import styles from "../styles/Home.module.css";
 import Keyboard from "../components/keyboard";
 import WordGuess from "../components/wordguess";
 
-import * as R from "ramda";
 import ActiveGuess from "../components/activeguess";
-
-function uniqueLetters(words: string[]): string[] {
-    const allLetters = R.join("", words);
-    const uniqLetters = R.uniq([...allLetters]);
-
-    return uniqLetters;
-}
-
-interface OutOfPlaceWord {
-    data: OutOfPlaceChar[];
-}
-
-interface OutOfPlaceChar {
-    letter: string;
-    isOk: boolean;
-    isOutOfPosition: boolean;
-}
-
-/**
- * Get a list of characters that are out of place and never OK.
- */
-function analyze(words: string[], finalWord: string): OutOfPlaceWord[] {
-    const data: OutOfPlaceWord[] = [];
-    for (let word of words) {
-        const items: OutOfPlaceChar[] = [];
-        for (let i = 0; i < word.length; i++) {
-            if (i < finalWord.length) {
-                items.push({
-                    letter: word[i].toUpperCase(),
-                    isOk: word[i].toUpperCase() === finalWord[i].toUpperCase(),
-                    isOutOfPosition:
-                        word[i].toUpperCase() !== finalWord[i].toUpperCase() &&
-                        finalWord.includes(word[i]),
-                });
-            }
-        }
-        data.push({
-            data: items,
-        });
-    }
-    return data;
-}
-
-/**
- * Get a list of characters in the correct place.
- */
-function getOkLetters(words: string[], finalWord: string): string[] {
-    const computedWords = analyze(words, finalWord);
-
-    const validChars = R.flatten(
-        computedWords.map((word) => word.data.filter((d) => d.isOk))
-    );
-    return R.uniq(validChars.map((c) => c.letter));
-}
-
-function getOutOfPlaceLetters(words: string[], finalWord: string): string[] {
-    const okLetters = getOkLetters(words, finalWord);
-    const computedWords = analyze(words, finalWord);
-
-    const validChars = R.flatten(
-        computedWords.map((word) => word.data.filter((d) => d.isOutOfPosition))
-    );
-    return R.uniq(validChars.map((c) => c.letter));
-}
+import {
+    uniqueLetters,
+    getOkLetters,
+    getOutOfPlaceLetters,
+} from "../components/util";
 
 const Home: NextPage = () => {
     const [isLoading, setLoading] = React.useState(false);
@@ -99,10 +39,16 @@ const Home: NextPage = () => {
 
     React.useEffect(() => {
         setLoading(true);
+        setGuessedWords([]);
+        setOut([]);
+        setOk([]);
+        setFinalWord("1");
+        setLetters([]);
+
         fetch("api/today")
             .then((res) => res.json())
             .then((data) => {
-                setFinalWord(data.word);
+                setFinalWord(data.word.toUpperCase());
                 setLoading(false);
             });
     }, []);
@@ -126,16 +72,13 @@ const Home: NextPage = () => {
                     <>
                         <div className={styles.grid}>
                             <div>Guesses</div>
-                            {guessedWords.map((word, wordindex) => {
-                                return (
-                                    <WordGuess
-                                        key={`gword_${wordindex}`}
-                                        word={word}
-                                        finalWord={finalWord}
-                                    />
-                                );
-                            })}
-                            NextGuess
+                            {guessedWords.map((word, wordindex) => (
+                                <WordGuess
+                                    key={`gword_${wordindex}`}
+                                    word={word}
+                                    finalWord={finalWord}
+                                />
+                            ))}
                             <ActiveGuess
                                 finalWord={finalWord}
                                 onAccept={onAccept}
