@@ -62,24 +62,6 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
 
     const resetGame = React.useCallback(() => {
         setLoading(true);
-        setGuessedWords([]);
-        setOut([]);
-        setOk([]);
-        setFinalWord("1");
-        setLetters([]);
-        setRound(1);
-
-        fetch("api/today")
-            .then((res) => res.json())
-            .then((data) => {
-                setFinalWord(data.word.toUpperCase());
-                setLoading(false);
-            });
-    }, []);
-
-    // on first load, get the word of the "day", reset all values.
-    React.useEffect(() => {
-        setLoading(true);
         setFinished({
             finished: false,
             complete: false,
@@ -98,17 +80,30 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
                 setFinalWord(data.word.toUpperCase());
                 setLoading(false);
             });
+    }, [
+        setLoading,
+        setFinished,
+        setGuessedWords,
+        setOut,
+        setOk,
+        setLetters,
+        setFinalWord,
+        setRound,
+    ]);
+
+    // on first load, get the word of the "day", reset all values.
+    React.useEffect(() => {
+        resetGame();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <>
             <h1 className={styles.title}>Wordle-Like</h1>
-            <p className={styles.description}>How to play the game.</p>
+            <p className={styles.description}>Guess 5 letter words.</p>
             {isLoading && <p>Loading...</p>}
             {!isLoading && finished.finished && (
                 <>
-                    <div>
-                        YOU DONE {finished.complete ? "SUCCESS" : "FAILURE"}
-                    </div>
+                    <div>{finished.complete ? "SUCCESS" : "FAILURE"}</div>
                     <button onClick={resetGame}>RETRY</button>
                 </>
             )}
