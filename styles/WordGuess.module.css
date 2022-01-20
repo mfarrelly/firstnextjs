@@ -1,0 +1,58 @@
+.letter {
+    border: 1px solid #ccc;
+    padding: 15px;
+    font-size: 32px;
+    width: 48px;
+    height: 72px;
+    display: inline-block;
+}
+
+.word {
+    align-items: center;
+}
+
+.keyRow {
+    display: flex;
+    text-align: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    max-width: 640px;
+}
+
+.key {
+    border: 1px solid #ccc;
+    flex-basis: auto;
+    flex-grow: 1;
+    color: #eee;
+    display: inline-block;
+    margin: 0.25em;
+    padding: 0.25em;
+    padding-top: 0.75em;
+    padding-bottom: 0.75em;
+    border-radius: 15%;
+}
+
+.bad {
+    border: 1px solid red;
+    color: red;
+}
+.guessed {
+    border: 1px solid #333;
+    color: #666;
+    background-color: #333;
+}
+
+.okay {
+    border: 1px solid greenyellow;
+    color: greenyellow;
+    background-color: #00aa00;
+}
+
+.outOfPosition {
+    border: 1px solid yellow;
+    color: yellow;
+    background-color: #663366;
+}
