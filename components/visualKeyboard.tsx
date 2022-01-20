@@ -3,6 +3,7 @@ import * as R from "ramda";
 import React from "react";
 import cx from "classnames";
 import { KeyContext } from "./keyContext";
+import Image from "next/image";
 
 export interface VisualKeyboardProps {
     disabled?: boolean;
@@ -55,7 +56,16 @@ export default function VisualKeyboard({
                                     } as KeyboardEvent)
                                 }
                             >
-                                {k}
+                                {k != "Enter" && k != "Backspace" ? (
+                                    k
+                                ) : (
+                                    <Image
+                                        src={`/${k}.png`}
+                                        width="32"
+                                        height="32"
+                                        alt={k}
+                                    />
+                                )}
                             </div>
                         );
                     })}
