@@ -5,12 +5,14 @@ import cx from "classnames";
 import { KeyContext } from "./keyContext";
 
 export interface VisualKeyboardProps {
+    disabled?: boolean;
     letters: string[];
     okLetters: string[];
     outOfPositionLetters: string[];
 }
 
 export default function VisualKeyboard({
+    disabled = false,
     letters,
     okLetters,
     outOfPositionLetters,
@@ -19,9 +21,9 @@ export default function VisualKeyboard({
 
     const keys = React.useMemo(() => {
         return [
-            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Backspace"],
+            ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
             ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-            ["Z", "X", "C", "V", "B", "N", "M", "Enter"],
+            ["Enter", "Z", "X", "C", "V", "B", "N", "M", "Backspace"],
         ];
     }, []);
 
@@ -48,7 +50,9 @@ export default function VisualKeyboard({
                                 )}
                                 onClick={() =>
                                     // mock a keyboard event.
-                                    onKeyPress({ key: k } as KeyboardEvent)
+                                    onKeyPress({
+                                        key: k,
+                                    } as KeyboardEvent)
                                 }
                             >
                                 {k}

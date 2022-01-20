@@ -1,7 +1,7 @@
 import React from "react";
 import { getOkLetters, getOutOfPlaceLetters, uniqueLetters } from "./util";
 
-import styles from "../styles/Home.module.css";
+import styles from "../styles/WordleLike.module.css";
 import WordGuess from "./wordguess";
 import ActiveGuess from "./activeguess";
 import VisualKeyboard from "./visualKeyboard";
@@ -10,8 +10,19 @@ export interface WordleProps {
     rounds?: number;
 }
 
+export interface WordleResult {
+    finished: boolean;
+    complete: boolean;
+    rounds: number;
+}
+
 export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
     const [isLoading, setLoading] = React.useState(false);
+    const [finished, setFinished] = React.useState<WordleResult>({
+        finished: false,
+        complete: false,
+        rounds: 0,
+    });
     const [round, setRound] = React.useState(1);
     const [guessedWords, setGuessedWords] = React.useState<string[]>([]);
     const [outOfPositionLetters, setOut] = React.useState<string[]>([]);
@@ -22,22 +33,58 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
         uniqueLetters(guessedWords)
     );
 
+    // after a word is guessed, update the letters.
     React.useEffect(() => {
+        // after the letters are guessed, update the visualKeyboard.
         setLetters(uniqueLetters(guessedWords));
         setOk(getOkLetters(guessedWords, finalWord));
         setOut(getOutOfPlaceLetters(guessedWords, finalWord));
-    }, [guessedWords, finalWord, setLetters, setOk, setOut]);
+
+        if (round > rounds) {
+            setFinished({ finished: true, complete: false, rounds: round });
+        }
+        if (guessedWords[guessedWords.length - 1] === finalWord) {
+            // you won?
+            setFinished({ finished: true, complete: true, rounds: round });
+        }
+    }, [guessedWords, finalWord, setLetters, setOk, setOut, round, rounds]);
 
     const onAccept = React.useCallback(
         (nextGuess: string) => {
-            setGuessedWords((last) => [...last, nextGuess]);
+            setGuessedWords((last) => {
+                return [...last, nextGuess];
+            });
+
             setRound((last) => last + 1);
         },
         [setGuessedWords]
     );
 
+    const resetGame = React.useCallback(() => {
+        setLoading(true);
+        setGuessedWords([]);
+        setOut([]);
+        setOk([]);
+        setFinalWord("1");
+        setLetters([]);
+        setRound(1);
+
+        fetch("api/today")
+            .then((res) => res.json())
+            .then((data) => {
+                setFinalWord(data.word.toUpperCase());
+                setLoading(false);
+            });
+    }, []);
+
+    // on first load, get the word of the "day", reset all values.
     React.useEffect(() => {
         setLoading(true);
+        setFinished({
+            finished: false,
+            complete: false,
+            rounds: 0,
+        });
         setGuessedWords([]);
         setOut([]);
         setOk([]);
@@ -54,9 +101,19 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
     }, []);
     return (
         <>
-            <h1 className={styles.title}>Woorlde</h1>
-            <p className={styles.description}>How to play the game.</p>
+            <h1 className={styles.title}>Wordle-Like</h1>
+            <p className={styles.description}>
+                How to play the game. Hint: {finalWord}
+            </p>
             {isLoading && <p>Loading...</p>}
+            {finished.finished && (
+                <>
+                    <div>
+                        YOU DONE {finished.complete ? "SUCCESS" : "FAILURE"}
+                    </div>
+                    <button onClick={resetGame}>RETRY</button>
+                </>
+            )}
             {!isLoading && (
                 <>
                     <div className={styles.grid}>
@@ -70,11 +127,16 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
                                 finalWord={finalWord}
                             />
                         ))}
-                        <ActiveGuess finalWord={finalWord} onAccept={onAccept}>
+                        <ActiveGuess
+                            finalWord={finalWord}
+                            onAccept={onAccept}
+                            disabled={finished.finished}
+                        >
                             <VisualKeyboard
                                 letters={letters}
                                 okLetters={okLetters}
                                 outOfPositionLetters={outOfPositionLetters}
+                                disabled={finished.finished}
                             />
                         </ActiveGuess>
                     </div>

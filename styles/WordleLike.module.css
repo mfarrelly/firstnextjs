@@ -1,21 +1,23 @@
 .container {
     padding: 0 2rem;
+    text-align: center;
 }
 
 .main {
     min-height: 100vh;
-    padding: 4rem 0;
+    padding: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    align-content: top;
+
+    max-width: 640px;
 }
 
 .footer {
     display: flex;
     flex: 1;
-    padding: 2rem 0;
+    padding: 1rem 0;
     border-top: 1px solid #eaeaea;
     justify-content: center;
     align-items: center;
@@ -41,8 +43,9 @@
 
 .title {
     margin: 0;
-    line-height: 1.15;
-    font-size: 4rem;
+    /* line-height: 1.15; */
+    font-size: 1.2em;
+    padding: 0;
 }
 
 .title,
@@ -51,23 +54,21 @@
 }
 
 .description {
-    margin: 4rem 0;
-    line-height: 1.5;
-    font-size: 1.5rem;
-}
+    margin: 1em 0;
+    /* line-height: 1.5; */
+    font-size: 1em;
+    text-align: center;
+    align-content: flex-start;
 
-.code {
-    background: #fafafa;
-    border-radius: 5px;
-    padding: 0.75rem;
-    font-size: 1.1rem;
-    font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-        DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+    border: 1px solid blue;
 }
 
 .grid {
+    border: 1px solid green;
     text-align: center;
-    align-items: center;
+    /* align-items: center; */
+    align-content: flex-start;
+    max-width: 640px;
     /* display: flex;
     align-items: center;
     justify-content: center;

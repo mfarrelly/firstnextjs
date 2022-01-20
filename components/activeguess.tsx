@@ -7,6 +7,7 @@ import { KeyContext, KeyContextProps } from "./keyContext";
 
 export interface WordGuessProps {
     children?: React.ReactElement;
+    disabled?: boolean;
     finalWord: string;
     onAccept: (word: string) => void;
     nextKey?: string;
@@ -14,6 +15,7 @@ export interface WordGuessProps {
 
 export default function ActiveGuess({
     children,
+    disabled = false,
     finalWord,
     onAccept,
     nextKey,
@@ -35,6 +37,9 @@ export default function ActiveGuess({
 
     const onKeyPress = React.useCallback(
         (ev: KeyboardEvent) => {
+            if (disabled) {
+                return;
+            }
             if (ev.ctrlKey || ev.altKey) {
                 return;
             }
@@ -68,11 +73,12 @@ export default function ActiveGuess({
                 }
             }
         },
-        [setLetters, letters, onAccept, maxLetters]
+        [disabled, setLetters, letters, onAccept, maxLetters]
     );
 
     React.useEffect(() => {
         document.addEventListener("keyup", onKeyPress);
+
         return () => {
             document.removeEventListener("keyup", onKeyPress);
         };
@@ -103,20 +109,22 @@ export default function ActiveGuess({
 
     return (
         <>
-            <div className={styles.word}>
-                {shownLetters.map((letterItem, index) => {
-                    return (
-                        <div
-                            key={index}
-                            className={cx({
-                                [styles.letter]: true,
-                            })}
-                        >
-                            {letterItem}
-                        </div>
-                    );
-                })}
-            </div>
+            {!disabled && (
+                <div className={styles.word}>
+                    {shownLetters.map((letterItem, index) => {
+                        return (
+                            <div
+                                key={index}
+                                className={cx({
+                                    [styles.letter]: true,
+                                })}
+                            >
+                                {letterItem}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
             <KeyContext.Provider value={contextValue}>
                 {children}
             </KeyContext.Provider>
