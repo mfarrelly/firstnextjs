@@ -102,11 +102,9 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
     return (
         <>
             <h1 className={styles.title}>Wordle-Like</h1>
-            <p className={styles.description}>
-                How to play the game. Hint: {finalWord}
-            </p>
+            <p className={styles.description}>How to play the game.</p>
             {isLoading && <p>Loading...</p>}
-            {finished.finished && (
+            {!isLoading && finished.finished && (
                 <>
                     <div>
                         YOU DONE {finished.complete ? "SUCCESS" : "FAILURE"}
