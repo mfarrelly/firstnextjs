@@ -5,6 +5,17 @@ import styles from "../styles/WordleLike.module.css";
 import WordGuess from "./wordguess";
 import ActiveGuess from "./activeguess";
 import VisualKeyboard from "./visualKeyboard";
+import {
+    Button,
+    Dialog,
+    DialogTitle,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Paper,
+    Stack,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 export interface WordleProps {
     rounds?: number;
@@ -14,6 +25,48 @@ export interface WordleResult {
     finished: boolean;
     complete: boolean;
     rounds: number;
+}
+const Item = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+}));
+
+interface WinConditionDialogProps {
+    open: boolean;
+    title: string;
+    description: string;
+    onNewGame: () => void;
+    onClose: () => void;
+}
+
+function WinConditionDialog({
+    open = false,
+    title,
+    description,
+    onNewGame = () => {
+        /* nothing */
+    },
+    onClose = () => {
+        /* nothing */
+    },
+}: WinConditionDialogProps) {
+    const handleClose = () => {
+        onClose();
+    };
+
+    const handleListItemClick = (value: any) => {
+        onClose();
+    };
+
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <DialogTitle>{title}</DialogTitle>
+            {description}
+            <Button onClick={onNewGame}>New Game</Button>
+        </Dialog>
+    );
 }
 
 export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
@@ -36,28 +89,29 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
     // after a word is guessed, update the letters.
     React.useEffect(() => {
         // after the letters are guessed, update the visualKeyboard.
-        setLetters(uniqueLetters(guessedWords));
-        setOk(getOkLetters(guessedWords, finalWord));
-        setOut(getOutOfPlaceLetters(guessedWords, finalWord));
-
-        if (round > rounds) {
-            setFinished({ finished: true, complete: false, rounds: round });
-        }
-        if (guessedWords[guessedWords.length - 1] === finalWord) {
-            // you won?
-            setFinished({ finished: true, complete: true, rounds: round });
-        }
     }, [guessedWords, finalWord, setLetters, setOk, setOut, round, rounds]);
 
     const onAccept = React.useCallback(
         (nextGuess: string) => {
+            const nextWords = [...guessedWords, nextGuess];
             setGuessedWords((last) => {
-                return [...last, nextGuess];
+                return nextWords;
             });
+            setLetters(uniqueLetters(nextWords));
+            setOk(getOkLetters(nextWords, finalWord));
+            setOut(getOutOfPlaceLetters(nextWords, finalWord));
+
+            if (round >= rounds) {
+                setFinished({ finished: true, complete: false, rounds: round });
+            }
+            if (nextWords[nextWords.length - 1] === finalWord) {
+                // you won?
+                setFinished({ finished: true, complete: true, rounds: round });
+            }
 
             setRound((last) => last + 1);
         },
-        [setGuessedWords]
+        [setGuessedWords, finalWord, guessedWords, rounds, round]
     );
 
     const resetGame = React.useCallback(() => {
@@ -101,29 +155,28 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
             <h1 className={styles.title}>Wordle-Like</h1>
             <p className={styles.description}>Guess 5 letter words.</p>
             {isLoading && <p>Loading...</p>}
-            {!isLoading && finished.finished && (
-                <>
-                    <div>{finished.complete ? "SUCCESS" : "FAILURE"}</div>
-                    <button onClick={resetGame}>RETRY</button>
-                </>
-            )}
+            <WinConditionDialog
+                open={!isLoading && finished.finished}
+                title={finished.complete ? "SUCCESS" : "FAILURE"}
+                description={`Completed in ${round - 1} rounds.`}
+                onClose={resetGame}
+                onNewGame={resetGame}
+            />
             {!isLoading && (
-                <>
-                    <div className={styles.grid}>
-                        <div>
-                            Guesses {round - 1}/{rounds}
-                        </div>
-                        {guessedWords.map((word, wordindex) => (
-                            <WordGuess
-                                key={`gword_${wordindex}`}
-                                word={word}
-                                finalWord={finalWord}
-                            />
-                        ))}
+                <Stack spacing={2}>
+                    <Item>
+                        Guesses {round - 1}/{rounds}
+                    </Item>
+                    <Item>
                         <ActiveGuess
                             finalWord={finalWord}
+                            guessedWords={guessedWords}
+                            rounds={rounds}
                             onAccept={onAccept}
                             disabled={finished.finished}
+                            letters={letters}
+                            okLetters={okLetters}
+                            outOfPositionLetters={outOfPositionLetters}
                         >
                             <VisualKeyboard
                                 letters={letters}
@@ -132,8 +185,8 @@ export function Wordle({ rounds = 6 }: WordleProps): JSX.Element {
                                 disabled={finished.finished}
                             />
                         </ActiveGuess>
-                    </div>
-                </>
+                    </Item>
+                </Stack>
             )}
         </>
     );

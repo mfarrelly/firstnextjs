@@ -4,14 +4,14 @@
 }
 
 .main {
-    min-height: 100vh;
+    /* min-height: 100vh;
     padding: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-content: top;
-
-    max-width: 640px;
+    align-content: top; */
+    display: "flex";
+    height: "100%";
 }
 
 .footer {
@@ -60,15 +60,14 @@
     text-align: center;
     align-content: flex-start;
 
-    border: 1px solid blue;
+    /* border: 1px solid blue; */
 }
 
 .grid {
-    border: 1px solid green;
+    /* border: 1px solid green; */
     text-align: center;
     /* align-items: center; */
     align-content: flex-start;
-    max-width: 640px;
     /* display: flex;
     align-items: center;
     justify-content: center;
