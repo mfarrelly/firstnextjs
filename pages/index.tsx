@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Link from "next/link";
+import Button from "@mui/material/Button";
 
 const Home: NextPage = () => {
     return (
@@ -27,9 +28,10 @@ const Home: NextPage = () => {
                         height="360"
                     />
                 </Link>
-                <p>
-                    <Link href="/wordlelike">Wordle-Like</Link>
-                </p>
+
+                <Button variant="contained" color="primary" href="/wordlelike">
+                    Wordle-Like
+                </Button>
             </main>
 
             <footer className={styles.footer}>

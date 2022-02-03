@@ -3,6 +3,7 @@ import * as R from "ramda";
 import cx from "classnames";
 import React from "react";
 import { analyze } from "./util";
+import { Badge, Chip, Button, ButtonGroup, Grid, Paper } from "@mui/material";
 
 export interface WordGuessProps {
     word: string;
@@ -19,25 +20,25 @@ export default function WordGuess({ word, finalWord = "" }: WordGuessProps) {
     }, [word, finalWord]);
 
     return (
-        <div className={styles.word}>
+        <Grid container sx={{ flexGrow: 1 }} justifyContent="center">
             {items.map((letterItem, index) => {
                 const isOk = letterItem.isOk;
                 const isOutOfPosition = letterItem.isOutOfPosition;
                 return (
-                    <div
-                        key={index}
-                        className={cx(
-                            {
-                                [styles.letter]: true,
-                            },
-                            { [styles.okay]: isOk },
-                            { [styles.outOfPosition]: isOutOfPosition }
-                        )}
-                    >
-                        {letterItem.letter}
-                    </div>
+                    <Grid key={index} item xs={1}>
+                        <Chip
+                            color={
+                                isOk
+                                    ? "success"
+                                    : isOutOfPosition
+                                    ? "secondary"
+                                    : undefined
+                            }
+                            label={letterItem.letter}
+                        />
+                    </Grid>
                 );
             })}
-        </div>
+        </Grid>
     );
 }
